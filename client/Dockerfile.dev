@@ -1,0 +1,23 @@
+FROM node:16-alpine
+
+# Set the working directory
+WORKDIR "/app"
+
+# Copy package.json and install dependencies
+COPY --chown=node:node ./package.json ./
+RUN npm install
+
+# Copy the rest of the application files
+COPY --chown=node:node . .
+
+# Explicitly create the .cache folder and set the correct permissions
+RUN mkdir -p /app/node_modules/.cache && chown -R node:node /app
+
+# Set CI mode to true to avoid interactive mode issues
+ENV CI=true
+
+# Switch to the 'node' user to avoid running as root
+USER node
+
+# Run the start script
+CMD ["npm", "run", "start"]
